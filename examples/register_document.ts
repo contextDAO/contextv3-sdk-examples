@@ -3,20 +3,38 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 
+/**
+ * Main function to register a new name in a context.
+ * 
+ * This function initializes a new context with the TESTNET network and a specified RPC provider URL.
+ * It then connects to a wallet using a private key.
+ * After connecting to the wallet, it initializes a document from the 'context'.
+ * 
+ * Finally, it registers a new name in the context, deposits tokens, and logs the result.
+ * 
+ * @async
+ * @function
+ * @throws {Error} Will throw an error if the wallet cannot be connected, the document cannot be initialized, or the name cannot be registered.
+ */
 async function main() {
-    const network = Network.TESTNET;
-    const rpcProviderUrl = process.env.RPC;
-    const context: Context = new Context({ network, rpcProviderUrl });
+    const context: Context = new Context({
+        network: Network.TESTNET,
+        rpcProviderUrl: process.env.RPC_PROVIDER
+    });
 
     // Connect the wallet of a document that is a curator.
-    const wallet: ContextWallet = await context.wallet(process.env.PRIV1); 
-    const doc: ContextDocument = await context.init('context', wallet);
+    const wallet: ContextWallet = await context.wallet(process.env.PRIVATE_KEY); 
+    const fromDoc: ContextDocument = await context.init('context', wallet);
 
     // Finally, context registers the name (level1) and deposit tokens
-    console.log('Registering alex1...');
-    await context.register(nameSchemaNFT, walletSchema.address, 3, docCTX);
-    await doc.register('alex1', '0x32F76D220FB46c799E14C4EE6D49F0318f3c2641', 5);
-    console.log('alex 1 has been registered');
+    const newName = 'polygon';
+    const ownerAddress = wallet.address;
+    const tokens = 3;
+
+    // Names are registered by a curator : context (fromDoc).
+    console.log(`Registering ${newName}...`);
+    await context.register(newName, ownerAddress, tokens, fromDoc);
+    console.log(`${newName} has been registered. Owner is ${ownerAddress} with ${tokens} tokens.`);
 }
 
 main().catch((error) => { console.error(error); });  
