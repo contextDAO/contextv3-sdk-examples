@@ -1,4 +1,4 @@
-import { Context, Network, ContextDocument } from '@contextdao/sdk';
+import { Context, Network, ContextDocument, ContextWallet } from '@contextdao/sdk';
 
 
 /**
@@ -19,5 +19,9 @@ async function main() {
     const doc: ContextDocument = await context.clone('startup/venture');
     const data = await doc.read();
     console.log(data);
+
+    const wallet: ContextWallet = await context.wallet(process.env.PRIVATE_KEY); 
+    console.log(wallet.address)
+    console.log(`${await wallet.balanceOf()} CTX`)
 }
 main().catch((error) => { console.error(error); });  
