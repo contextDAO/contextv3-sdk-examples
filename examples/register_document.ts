@@ -14,6 +14,7 @@ async function main() {
 
     // Finally, context registers the name (level1) and deposit tokens
     console.log('Registering alex1...');
+    await context.register(nameSchemaNFT, walletSchema.address, 3, docCTX);
     await doc.register('alex1', '0x32F76D220FB46c799E14C4EE6D49F0318f3c2641', 5);
     console.log('alex 1 has been registered');
 }

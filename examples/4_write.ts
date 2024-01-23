@@ -4,24 +4,26 @@ dotenv.config();
 
 
 async function main() {
-    const network = Network.TESTNET;
-    const rpcProviderUrl = process.env.RPC;
-    const context: Context = new Context({ network, rpcProviderUrl });
+  // Connect Context.
+    const context: Context = new Context({
+      network: Network.TESTNET,
+      rpcProviderUrl: process.env.RPC
+    });
 
-    // Connect the wallet of a document that is a curator.
-    const wallet: ContextWallet = await context.wallet(process.env.PRIV2); 
-    const doc: ContextDocument = await context.init('alex1', wallet);
+    // Init a document and connect a wallet.
+    const wallet: ContextWallet = await context.wallet(process.env.PRIVATE_KEY);
+    const doc = await context.init('context', wallet);
 
-    // First commit
-    await doc.commit({
-      action: 'write',
-      path: '/',
-      data: {
-        name: 'Alex1',
-        website: 'https://www.ctx.xyz',
-      },
-    } as Action);
-    await doc.push(Version.MAJOR, 'First Push');
+    // Prepare the document. First action : write
+    doc.write({ name: 'Context Protocol' });
+
+    // Save: commit.
+    let res:any = await doc.commit('First Commit');    
+    console.log(`Arweave transaction : ${res}`);
+
+    // Update Version: commit.
+    res = await doc.push(Version.MAJOR);
+    console.log(`Version : ${res.version.major}.${res.version.minor}.${res.version.patch}`);
 }
 
 main().catch((error) => { console.error(error); });  
