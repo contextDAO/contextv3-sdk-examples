@@ -17,7 +17,7 @@ dotenv.config();
  * @throws {Error} Will throw an error if the wallet cannot be connected, the document cannot be initialized, or the commit or push operations fail.
  */
 async function main() {
-    const name = 'polygon';
+    const name = 'context';
     const context: Context = new Context({
         network: Network.TESTNET,
         rpcProviderUrl: process.env.RPC_PROVIDER
@@ -25,17 +25,20 @@ async function main() {
 
     // Connect the wallet of a document that is a curator.
     const wallet: ContextWallet = await context.wallet(process.env.PRIVATE_KEY); 
-    const doc: ContextDocument = await context.init(name, wallet);
+    const doc: ContextDocument = await context.clone(name, wallet);
 
     // Prepare the document. First action : write
-    doc.write({ name: 'Polygon Blockchain' });
+    doc.install('core/organization#1.0.0');
+    doc.install('core/notifications#1.0.0');
+    doc.install('startup/venture#1.0.2');
+    doc.pushArray('team', {human:'ctx:cryptobenkei', role:'CEO'});
 
     // Save: commit.
-    let res:any = await doc.commit('First Commit');    
+    let res:any = await doc.commit('Update Document, add schemaas');
     console.log(`Arweave transaction : ${res}`);
 
     // Update Version: commit.
-    res = await doc.push(Version.MAJOR);
+    res = await doc.push(Version.PATCH);
     console.log(`Version : ${res.version.major}.${res.version.minor}.${res.version.patch}`);
     console.log(`https://testrpc.ctx.xyz/${name}`);
 }
